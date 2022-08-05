@@ -38,7 +38,7 @@ public class Booking {
                             System.out.println("Patient is not added...");
                     else
                         try {
-                            throw new SlotBook("Slot Already Booked.\n");
+                            throw new SlotBookException("Slot Already Booked.\n");
                         } catch (Exception e) {
                             System.out.println(e);
                         }
@@ -115,6 +115,7 @@ public class Booking {
 
     public static boolean addPatient(int slot) {
         HashSet<String> hs = new HashSet<String>();
+        s.nextLine();
         System.out.print("Enter a name : ");
         String name = s.next();
         System.out.print("Enter a age : ");
@@ -130,7 +131,7 @@ public class Booking {
         String email = s.next();
         if (!checkEmail(email)) {
             try {
-                throw new EmailNotValid("Email Not Valid : ");
+                throw new EmailNotValidException("Email Not Valid : ");
             } catch (Exception e) {
                 System.out.println(e);
             }
@@ -141,13 +142,14 @@ public class Booking {
             System.out.print("Enter a diseases : ");
             String d = s.next();
             hs.add(d);
-            System.out.print("Enter y/Y for add more dieses or n/N: ");
-            s.nextLine();
+            System.out.print("Enter y for add more dieses or n/N: ");
             String chec = s.next();
-            if (chec.equalsIgnoreCase("y"))
+            if (chec.equals("y") || chec.equals("Y"))
                 continue;
-            else
+            else{
+                s.nextLine();
                 break;
+            }
         }
 
         Patient p = new Patient(name, age, hs, email, slot);
@@ -163,14 +165,19 @@ public class Booking {
 
     public static boolean checkEmail(String email) {
         String[] st = email.split("@");
+        int count=0;
         for (int i = 0; i < st.length; i++)
             if (st[i].equals("gmail.com"))
-                return true;
+                count++;
 
         for (int i = 0; i < allPatients.size(); i++) {
             if (allPatients.get(i).getEmail().equals(email))
                 return false;
         }
+
+        if(count==1)
+            return true;
+
         return false;
     }
 
@@ -206,73 +213,7 @@ public class Booking {
     }
 }
 
-class Patient {
-    private String name;
-    private int age;
-    private HashSet<String> dieses = new HashSet<String>();
-    private String email;
-    private int slot;
 
-    public Patient() {
-    }
 
-    public Patient(String name, int age, HashSet dieses, String email, int slot) {
-        this.email = email;
-        this.name = name;
-        this.age = age;
-        this.dieses = dieses;
-        this.slot = slot;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public void setSlot(int slot) {
-        this.slot = slot;
-    }
-
-    public int getSlot() {
-        return this.slot;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setDieses(HashSet al) {
-        this.dieses = al;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public int getAge() {
-        return this.age;
-    }
-
-    public HashSet getDieses() {
-        return this.dieses;
-    }
-}
-
-class EmailNotValid extends Exception {
-    public EmailNotValid(String msg) {
-        super(msg);
-    }
-}
-
-class SlotBook extends Exception {
-    public SlotBook(String msg) {
-        super(msg);
-    }
-}
